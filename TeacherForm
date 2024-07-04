@@ -1,0 +1,144 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
+import TeacherList from './TeacherList';
+import Footer from './Footer';
+
+const TeacherForm = ({
+  addOrEditTeacher,
+  currentId,
+  teacherObjects = {},
+  onEditTeacher,
+  onDeleteTeacher
+}) => {
+  const initializedFieldValues = {
+    name: '',
+    department: '',
+    schedule: '',
+    marks: '',
+    assignmentDetails: '',
+    document: ''
+  };
+
+  const [values, setValues] = useState(initializedFieldValues);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentId === "" || !teacherObjects[currentId]) {
+      setValues(initializedFieldValues);
+    } else {
+      setValues(teacherObjects[currentId]);
+    }
+  }, [currentId, teacherObjects]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues({
+      ...values,
+      [name]: value
+    });
+  };
+const handleFileChange = (event) => {
+    const { name, files } = event.target;
+    setValues({
+      ...values,
+      [name]: files[0] // Store the file object
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addOrEditTeacher(values);
+    setValues(initializedFieldValues);
+    navigate('/TeacherForm');
+  };
+
+  return (
+    <div className="teacher-form-container">
+      <Navbar />
+      <h1>{currentId ? 'Edit Teacher Details' : 'Add Teacher Details'}</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label htmlFor="name">Teacher Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={values.name}
+            onChange={handleChange}
+            placeholder="Enter teacher name"
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="department">Department:</label>
+          <input
+            type="text"
+            id="department"
+            name="department"
+            value={values.department}
+            onChange={handleChange}
+            placeholder="Enter department"
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="schedule">Schedule:</label>
+          <input
+            type="text"
+            id="schedule"
+            name="schedule"
+            value={values.schedule}
+            onChange={handleChange}
+            placeholder="Enter schedule"
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="marks">Marks:</label>
+          <input
+            type="text"
+            id="marks"
+            name="marks"
+            value={values.marks}
+            onChange={handleChange}
+            placeholder="Enter marks"
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="assignmentDetails">Assignment Details:</label>
+          <input
+            type="text"
+            id="assignmentDetails"
+            name="assignmentDetails"
+            value={values.assignmentDetails}
+            onChange={handleChange}
+            placeholder="Enter assignment details"
+            required
+          />
+          </div>
+        <div className="form-field">
+          <label htmlFor="document">Instruction Document:</label>
+          <input
+            type="file"
+            id="document"
+            name="document"
+            onChange={handleFileChange}
+            required
+          />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+      <h2>Teacher List</h2>
+      <TeacherList
+        teacherObjects={teacherObjects}
+        onEdit={onEditTeacher}
+        onDelete={onDeleteTeacher}
+      />
+      <Footer />
+    </div>
+  );
+};
+
+export default TeacherForm;
